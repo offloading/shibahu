@@ -103,3 +103,244 @@ npm run dev
 ```
 
 これにより、開発サーバーが実行され、ビルドによって生成された出力を確認できます。http://localhost:3000 に移動すると、実行中のアプリを確認できます。
+
+#### 新しいバックエンドを初期化する
+
+Next.js アプリを実行できるようになったので、アプリのサポートに必要なバックエンドサービスを作成できるように、Amplify をセットアップします。
+
+新しいターミナルを開きます。プロジェクトのルートから、次を実行します。
+
+```bash
+amplify init
+```
+
+Amplify を初期化すると、アプリに関するいくつかの情報を求められます。
+
+```bash
+Enter a name for the project (nextamplified)
+
+# All AWS services you provision for your app are grouped into an "environment"
+# A common naming convention is dev, staging, and production
+Enter a name for the environment (dev)
+
+# Sometimes the CLI will prompt you to edit a file, it will use this editor to open those files.
+Choose your default editor
+
+# Amplify supports JavaScript (Web & React Native), iOS, and Android apps
+Choose the type of app that you're building (javascript)
+
+What JavaScript framework are you using (react)
+
+Source directory path (src)
+
+Distribution directory path (build)
+
+Build command (npm run build)
+
+Start command (npm start)
+
+# This is the profile you created with the `amplify configure` command in the introduction step.
+Do you want to use an AWS profile?
+```
+
+> 可能な場合、CLI は、Amplify が初期化されているプロジェクトのタイプに基づいて適切な構成を推測します。この場合、CLI は、Create Next App を使用していることと、アプリ、フレームワーク、ソース、ディストリビューション、ビルド、そして起動オプションを認識します。
+
+新しい Amplify プロジェクトを初期化すると、いくつかのことが起こります。
+
+- バックエンドの定義を保存する、`amplify` という最上位のディレクトリが作成されます。チュートリアルでは、GraphQL API や認証などの機能を追加します。機能を追加すると、`amplify` フォルダーは、バックエンド スタックを定義するコードとしてのインフラストラクチャ テンプレートと共に拡大します。コードとしてのインフラストラクチャは、レプリケート可能なバックエンド スタックを作成するためのベスト プラクティスの方法です。
+- Amplify で作成するサービスのすべての設定を保持する aws-exports.js というファイルが src ディレクトリに作成されます。これは、Amplify クライアントがバックエンド サービスに関する必要な情報を取得できる方法です。
+- .gitignore ファイルを変更し、生成されたファイルを無視リストに追加します。
+- クラウド プロジェクトが AWS Amplify コンソールに作成され、Amplify コンソールを実行してアクセスできます。コンソールには、バックエンド環境のリスト、Amplify カテゴリごとにプロビジョニングされたリソースへのディープ リンク、最近のデプロイのステータス、バックエンド リソースの昇格、クローン作成、プル、削除の手順が表示されます。
+
+カテゴリを追加または削除し、Amplify CLI を使用してバックエンド設定を更新すると、aws-exports.js の設定が自動的に更新されます。
+
+#### Amplify ライブラリをインストールする
+
+クライアントで Amplify を使用するための最初のステップは、必要な依存関係をインストールすることです。
+
+```bash
+npm install aws-amplify @aws-amplify/ui-react
+```
+
+`aws-amplify` パッケージは、アプリで Amplify を操作するためのメインライブラリです。`@aws-amplify/ui-react` パッケージには、アプリの構築時に使用する React 固有の UI コンポーネントが含まれています。
+
+Next.js アプリがセットアップされ、Amplify が初期化されたので、次のステップで API を追加する準備が整いました。
+
+### API とデータベースをアプリに接続する
+
+Next.js アプリを作成して構成し、新しい Amplify プロジェクトを初期化したので、機能を追加できます。最初に追加する機能は API です。
+
+Amplify CLI は、REST と GraphQL の 2 種類の API カテゴリの作成と操作をサポートしています。
+
+このステップで作成する API は、AWS AppSync (マネージド GraphQL サービス) を使用する GraphQL API であり、データベースは Amazon DynamoDB (NoSQL データベース) です。
+
+#### GraphQL API とデータベースを作成する
+
+[GraphQL API](https://docs.aws.amazon.com/appsync/latest/devguide/designing-a-graphql-api.html) をアプリに追加し、アプリケーション ディレクトリのルートから次のコマンドを実行して、データベースを自動的にプロビジョニングします。
+
+```bash
+amplify add api
+```
+
+以下の明示的な値を選択して、*API キー* (パブリック読み取りアクセス用) と *Cognito ユーザープール* (認証済みアクセス用) を有効にします。
+
+```bash
+? Select from one of the below mentioned services: GraphQL
+? Here is the GraphQL API that we will create. Select a setting to edit or continue
+Authorization modes: API key (default, expiration time: 7 days from now)
+? Choose the default authorization type for the API Amazon Cognito User Pool
+Using service: Cognito, provided by: awscloudformation
+
+The current configured provider is Amazon Cognito.
+
+Do you want to use the default authentication and security configuration? Default configuration
+
+Warning: you will not be able to edit these selections.
+
+How do you want users to be able to sign in? Username
+Do you want to configure advanced settings? No, I am done.
+✅ Successfully added auth resource nextamplified locally
+
+✅ Some next steps:
+"amplify push" will build all your local backend resources and provision it in the cloud
+"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud
+
+? Configure additional auth types? No
+? Here is the GraphQL API that we will create. Select a setting to edit or continue Continue
+? Choose a schema template: Single object with fields (e.g., “Todo” with ID, name, description)
+```
+
+CLI は、この GraphQL スキーマをテキストエディターで開きます。サンプルスキーマを以下の Post モデルに置き換えます。
+
+*amplify/backend/api/nextamplified/schema.graphql*
+
+```graphql
+type Post
+  @model
+  @auth(rules: [{ allow: owner }, { allow: public, operations: [read] }]) {
+  id: ID!
+  title: String!
+  content: String!
+}
+```
+
+生成されるスキーマは、ブログアプリ用です。`@model` の `Post` タイプのディレクティブに気付くでしょう。このディレクティブは、Amplify の [GraphQL 変換](https://docs.amplify.aws/cli/graphql/data-modeling/) ライブラリの一部です。
+
+GraphQL 変換ライブラリは、スキーマで使用できるカスタムディレクティブを提供します。これにより、データモデルの定義、認証および認可ルールの設定、サーバーレス関数のリゾルバーの構成などを行うことができます。
+
+`@model` ディレクティブで修飾された型は、型のデータベース テーブル (Post テーブル)、CRUD (作成、読み取り、更新、削除) とリスト操作のスキーマ、およびすべてを連携させるために必要な GraphQL リゾルバーを足場にします。
+
+コマンド ラインで Enter キーを押してスキーマを受け入れ、次の手順に進みます。
+
+##### API のデプロイ
+
+このバックエンドをデプロイするには、`push` コマンドを実行します。
+
+```bash
+amplify push
+```
+
+```bash
+Current Environment: dev
+
+┌──────────┬───────────────────────┬───────────┬───────────────────┐
+│ Category │ Resource name         │ Operation │ Provider plugin   │
+├──────────┼───────────────────────┼───────────┼───────────────────┤
+│ Auth     │ nextamplifiedXXXXXXX  │ Create    │ awscloudformation │
+├──────────┼───────────────────────┼───────────┼───────────────────┤
+│ Api      │ nextamplified         │ Create    │ awscloudformation │
+└──────────┴───────────────────────┴───────────┴───────────────────┘
+? Are you sure you want to continue? Yes
+
+# You will be walked through the following questions for GraphQL code generation
+
+
+API key configuration
+✔ Enter a description for the API key: ·
+✔ After how many days from now the API key should expire (1-365): · 7
+GraphQL schema compiled successfully.
+
+? Do you want to generate code for your newly created GraphQL API Yes
+? Choose the code generation language target javascript
+? Enter the file name pattern of graphql queries, mutations and subscriptions src/graphql/**/*.js
+? Do you want to generate/update all possible GraphQL operations - queries, mutations and subscriptions Yes
+? Enter maximum statement depth [increase from default if your schema is deeply nested] 2
+
+...
+
+✔ Generated GraphQL operations successfully and saved at src/graphql
+✔ All resources are updated in the cloud
+```
+
+これで API がライブになり、操作を開始できます。
+
+デプロイした API には、投稿の作成、読み取り、更新、削除、および一覧表示のための操作が含まれています。
+
+次に、次のコマンドを実行して Amplify のステータスを確認します。
+
+```bash
+amplify status
+```
+
+これにより、現在の環境、作成されたカテゴリ、それらのカテゴリの状態など、Amplify プロジェクトの現在のステータスが表示されます。次のようになります。
+
+```bash
+Current Environment: dev
+
+┌──────────┬───────────────────────┬───────────┬───────────────────┐
+│ Category │ Resource name         │ Operation │ Provider plugin   │
+├──────────┼───────────────────────┼───────────┼───────────────────┤
+│ Auth     │ nextamplifiedXXXXXXXX │ No Change │ awscloudformation │
+├──────────┼───────────────────────┼───────────┼───────────────────┤
+│ Api      │ nextamplified         │ No Change │ awscloudformation │
+└──────────┴───────────────────────┴───────────┴───────────────────┘
+```
+
+いつでも AppSync コンソールで GraphQL API を表示するには、次のコマンドを実行します。
+
+```bash
+amplify console api
+```
+
+Amplify コンソールでいつでもアプリ全体を表示するには、次のコマンドを実行します。
+
+```bash
+amplify console
+```
+
+##### (オプショナル) API をテストする
+
+これをローカルでテストするには、mock コマンドを実行します。注: [モッキングをセットアップする手順](https://docs.amplify.aws/cli/usage/mock/) を参照してください。
+
+> 先に進んでフロントエンドを接続したい場合は、次のステップにジャンプできます。
+
+```bash
+amplify mock api
+```
+
+注: `amplify mock api` には Java が必要です
+
+```bash
+# If you have not already deployed you API, you will be walked through the following steps for GraphQL code generation
+? Choose the code generation language target: javascript (or preferred target)
+? Enter the file name pattern of graphql queries, mutations and subscriptions: src/graphql/**/*.js
+? Do you want to generate/update all possible GraphQL operations - queries, mutations and subscriptions: Yes
+? Enter maximum statement depth [increase from default if your schema is deeply nested] 2
+```
+
+これにより、ローカル ートで GraphiQL エクスプローラーが開きます。テスト環境から、クエリやミューテーションなど、さまざまな操作をローカルで試すことができます。
+
+GraphiQL ツールバーで、[使用: ユーザー プール] を選択し、post の作成を試みます。
+
+```graphql
+mutation CreatePost {
+  createPost(input: { title: "Test Post", content: "post content" }) {
+    id
+    owner
+    title
+    updatedAt
+    createdAt
+    content
+  }
+}
+```
