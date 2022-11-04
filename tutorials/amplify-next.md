@@ -330,7 +330,7 @@ amplify mock api
 
 これにより、ローカル ートで GraphiQL エクスプローラーが開きます。テスト環境から、クエリやミューテーションなど、さまざまな操作をローカルで試すことができます。
 
-GraphiQL ツールバーで、[使用: ユーザー プール] を選択し、post の作成を試みます。
+GraphiQL ツールバーで、*Use: API Key* を選択し、post の作成を試みます。
 
 ```graphql
 mutation CreatePost {
@@ -344,3 +344,15 @@ mutation CreatePost {
   }
 }
 ```
+
+#### サーバーサイドレンダリング (SSR) を使用する API
+
+このセクションでは、Next.js アプリケーションから投稿を一覧表示および作成する方法を作成します。これを行うには、サーバーから最新の投稿を取得してレンダリングし、クライアントで新しい投稿を作成します。
+
+次のライブラリがインストールされていることを確認します。
+
+```bash
+npm install aws-amplify @aws-amplify/ui-react
+```
+
+*pages/_app.js* を開き、次のコードを追加して、[Amplify UI](https://ui.docs.amplify.aws/) からスタイルをインポートします。
