@@ -90,7 +90,7 @@ Amplify CLI will then ask you to copy and paste the accessKeyId and the secretAc
 プロジェクト ディレクトリから、次のコマンドを実行します。
 
 ```bash
-npx create-next-app next-amplified
+npx create-next-app@10.2.3 --ts next-amplified
 cd next-amplified
 ```
 
@@ -117,30 +117,55 @@ amplify init
 Amplify を初期化すると、アプリに関するいくつかの情報を求められます。
 
 ```bash
-Enter a name for the project (nextamplified)
+% amplify init
+Note: It is recommended to run this command from the root of your app directory
+? Enter a name for the project mynextamplified
+The following configuration will be applied:
 
-# All AWS services you provision for your app are grouped into an "environment"
-# A common naming convention is dev, staging, and production
-Enter a name for the environment (dev)
+Project information
+| Name: mynextamplified
+| Environment: dev
+| Default editor: Visual Studio Code
+| App type: javascript
+| Javascript framework: react
+| Source Directory Path: src
+| Distribution Directory Path: build
+| Build Command: npm run-script build
+| Start Command: npm run-script start
 
-# Sometimes the CLI will prompt you to edit a file, it will use this editor to open those files.
-Choose your default editor
+? Initialize the project with the above configuration? Yes
+Using default provider  awscloudformation
+? Select the authentication method you want to use: AWS profile
 
-# Amplify supports JavaScript (Web & React Native), iOS, and Android apps
-Choose the type of app that you're building (javascript)
+For more information on AWS Profiles, see:
+https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html
 
-What JavaScript framework are you using (react)
+? Please choose the profile you want to use my-next-amplified
+Adding backend environment dev to AWS Amplify app: d3hflhgs0adcbt
 
-Source directory path (src)
+Deployment completed.
+Deployed root stack mynextamplified [ ======================================== ] 4/4
+	amplify-mynextamplified-dev-1… AWS::CloudFormation::Stack     CREATE_COMPLETE                Fri Nov 04 2022 15:44:05…
+	UnauthRole                     AWS::IAM::Role                 CREATE_COMPLETE                Fri Nov 04 2022 15:44:02…
+	AuthRole                       AWS::IAM::Role                 CREATE_COMPLETE                Fri Nov 04 2022 15:44:02…
+	DeploymentBucket               AWS::S3::Bucket                CREATE_COMPLETE                Fri Nov 04 2022 15:44:03…
 
-Distribution directory path (build)
+✔ Help improve Amplify CLI by sharing non sensitive configurations on failures (y/N) · no
+Deployment bucket fetched.
+✔ Initialized provider successfully.
+✅ Initialized your environment successfully.
 
-Build command (npm run build)
+Your project has been successfully initialized and connected to the cloud!
 
-Start command (npm start)
+Some next steps:
+"amplify status" will show you what you've added already and if it's locally configured or deployed
+"amplify add <category>" will allow you to add features like user login or a backend API
+"amplify push" will build all your local backend resources and provision it in the cloud
+"amplify console" to open the Amplify Console and view your project status
+"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud
 
-# This is the profile you created with the `amplify configure` command in the introduction step.
-Do you want to use an AWS profile?
+Pro tip:
+Try "amplify add api" to create a backend API and then "amplify push" to deploy everything
 ```
 
 > 可能な場合、CLI は、Amplify が初期化されているプロジェクトのタイプに基づいて適切な構成を推測します。この場合、CLI は、Create Next App を使用していることと、アプリ、フレームワーク、ソース、ディストリビューション、ビルド、そして起動オプションを認識します。
@@ -186,33 +211,26 @@ amplify add api
 
 ```bash
 ? Select from one of the below mentioned services: GraphQL
-? Here is the GraphQL API that we will create. Select a setting to edit or continue
-Authorization modes: API key (default, expiration time: 7 days from now)
-? Choose the default authorization type for the API Amazon Cognito User Pool
-Using service: Cognito, provided by: awscloudformation
+? Here is the GraphQL API that we will create. Select a setting to edit or continue Continue
+? Choose a schema template: Single object with fields (e.g., “Todo” with ID, name, description)
 
-The current configured provider is Amazon Cognito.
+⚠️  WARNING: your GraphQL API currently allows public create, read, update, and delete access to all models via an API Key. To configure PRODUCTION-READY authorization rules, review: https://docs.amplify.aws/cli/graphql/authorization-rules
 
-Do you want to use the default authentication and security configuration? Default configuration
+✅ GraphQL schema compiled successfully.
 
-Warning: you will not be able to edit these selections.
-
-How do you want users to be able to sign in? Username
-Do you want to configure advanced settings? No, I am done.
-✅ Successfully added auth resource nextamplified locally
+Edit your schema at /Users/p786/repositories/shibahu/suburi/my-next-amplified/amplify/backend/api/mynextamplified/schema.graphql or place .graphql files in a directory at /Users/p786/repositories/shibahu/suburi/my-next-amplified/amplify/backend/api/mynextamplified/schema
+✔ Do you want to edit the schema now? (Y/n) · yes
+Edit the file in your editor: /Users/p786/repositories/shibahu/suburi/my-next-amplified/amplify/backend/api/mynextamplified/schema.graphql
+✅ Successfully added resource mynextamplified locally
 
 ✅ Some next steps:
 "amplify push" will build all your local backend resources and provision it in the cloud
 "amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud
-
-? Configure additional auth types? No
-? Here is the GraphQL API that we will create. Select a setting to edit or continue Continue
-? Choose a schema template: Single object with fields (e.g., “Todo” with ID, name, description)
 ```
 
 CLI は、この GraphQL スキーマをテキストエディターで開きます。サンプルスキーマを以下の Post モデルに置き換えます。
 
-*amplify/backend/api/nextamplified/schema.graphql*
+*amplify/backend/api/mynextamplified/schema.graphql*
 
 ```graphql
 type Post
@@ -241,35 +259,105 @@ amplify push
 ```
 
 ```bash
-Current Environment: dev
+⠋ Fetching updates to backend environment: dev from the cloud.
+⚠️  WARNING: your GraphQL API currently allows public create, read, update, and delete access to all models via an API Key. To configure PRODUCTION-READY authorization rules, review: https://docs.amplify.aws/cli/graphql/authorization-rules
 
-┌──────────┬───────────────────────┬───────────┬───────────────────┐
-│ Category │ Resource name         │ Operation │ Provider plugin   │
-├──────────┼───────────────────────┼───────────┼───────────────────┤
-│ Auth     │ nextamplifiedXXXXXXX  │ Create    │ awscloudformation │
-├──────────┼───────────────────────┼───────────┼───────────────────┤
-│ Api      │ nextamplified         │ Create    │ awscloudformation │
-└──────────┴───────────────────────┴───────────┴───────────────────┘
+✔ Successfully pulled backend environment dev from the cloud.
+⠸ Building resource api/mynextamplified
+⚠️  WARNING: your GraphQL API currently allows public create, read, update, and delete access to all models via an API Key. To configure PRODUCTION-READY authorization rules, review: https://docs.amplify.aws/cli/graphql/authorization-rules
+
+
+    Current Environment: dev
+
+┌──────────┬─────────────────┬───────────┬───────────────────┐
+│ Category │ Resource name   │ Operation │ Provider plugin   │
+├──────────┼─────────────────┼───────────┼───────────────────┤
+│ Api      │ mynextamplified │ Create    │ awscloudformation │
+└──────────┴─────────────────┴───────────┴───────────────────┘
 ? Are you sure you want to continue? Yes
 
-# You will be walked through the following questions for GraphQL code generation
+⚠️  WARNING: your GraphQL API currently allows public create, read, update, and delete access to all models via an API Key. To configure PRODUCTION-READY authorization rules, review: https://docs.amplify.aws/cli/graphql/authorization-rules
+
+Cognito UserPool configuration
+Using service: Cognito, provided by: awscloudformation
+
+ The current configured provider is Amazon Cognito.
+
+ Do you want to use the default authentication and security configuration? Default configuration
+ Warning: you will not be able to edit these selections.
+ How do you want users to be able to sign in? Username
+ Do you want to configure advanced settings? No, I am done.
+✅ Successfully added auth resource mynextamplified762a1213 locally
+
+✅ Some next steps:
+"amplify push" will build all your local backend resources and provision it in the cloud
+"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud
 
 
-API key configuration
-✔ Enter a description for the API key: ·
-✔ After how many days from now the API key should expire (1-365): · 7
-GraphQL schema compiled successfully.
+⚠️  WARNING: your GraphQL API currently allows public create, read, update, and delete access to all models via an API Key. To configure PRODUCTION-READY authorization rules, review: https://docs.amplify.aws/cli/graphql/authorization-rules
 
+⚠️ WARNING: owners may reassign ownership for the following model(s) and role(s): Post: [owner]. If this is not intentional, you may want to apply field-level authorization rules to these fields. To read more: https://docs.amplify.aws/cli/graphql/authorization-rules/#per-user--owner-based-data-access.
+✅ GraphQL schema compiled successfully.
+
+Edit your schema at /Users/p786/repositories/shibahu/suburi/my-next-amplified/amplify/backend/api/mynextamplified/schema.graphql or place .graphql files in a directory at /Users/p786/repositories/shibahu/suburi/my-next-amplified/amplify/backend/api/mynextamplified/schema
+
+⚠️  WARNING: your GraphQL API currently allows public create, read, update, and delete access to all models via an API Key. To configure PRODUCTION-READY authorization rules, review: https://docs.amplify.aws/cli/graphql/authorization-rules
+
+⚠️ WARNING: owners may reassign ownership for the following model(s) and role(s): Post: [owner]. If this is not intentional, you may want to apply field-level authorization rules to these fields. To read more: https://docs.amplify.aws/cli/graphql/authorization-rules/#per-user--owner-based-data-access.
+✅ GraphQL schema compiled successfully.
+
+Edit your schema at /Users/p786/repositories/shibahu/suburi/my-next-amplified/amplify/backend/api/mynextamplified/schema.graphql or place .graphql files in a directory at /Users/p786/repositories/shibahu/suburi/my-next-amplified/amplify/backend/api/mynextamplified/schema
+⠦ Building resource api/mynextamplified
+⚠️  WARNING: your GraphQL API currently allows public create, read, update, and delete access to all models via an API Key. To configure PRODUCTION-READY authorization rules, review: https://docs.amplify.aws/cli/graphql/authorization-rules
+
+⚠️ WARNING: owners may reassign ownership for the following model(s) and role(s): Post: [owner]. If this is not intentional, you may want to apply field-level authorization rules to these fields. To read more: https://docs.amplify.aws/cli/graphql/authorization-rules/#per-user--owner-based-data-access.
+✅ GraphQL schema compiled successfully.
+
+Edit your schema at /Users/p786/repositories/shibahu/suburi/my-next-amplified/amplify/backend/api/mynextamplified/schema.graphql or place .graphql files in a directory at /Users/p786/repositories/shibahu/suburi/my-next-amplified/amplify/backend/api/mynextamplified/schema
+⚠️ Amplify CLI now supports verifying a Cognito user email address that has been changed and will automatically update your auth configuration. Read more: https://docs.amplify.aws/lib/auth/manageusers/q/platform/js/#updating-and-verifying-a-cognito-user-email-address
 ? Do you want to generate code for your newly created GraphQL API Yes
-? Choose the code generation language target javascript
-? Enter the file name pattern of graphql queries, mutations and subscriptions src/graphql/**/*.js
+? Choose the code generation language target typescript
+? Enter the file name pattern of graphql queries, mutations and subscriptions src/graphql/**/*.ts
 ? Do you want to generate/update all possible GraphQL operations - queries, mutations and subscriptions Yes
 ? Enter maximum statement depth [increase from default if your schema is deeply nested] 2
+? Enter the file name for the generated code src/API.ts
 
-...
+Deployment completed.
+Deploying root stack mynextamplified [ ===========================------------- ] 2/3
+	amplify-mynextamplified-dev-1… AWS::CloudFormation::Stack     UPDATE_COMPLETE_CLEANUP_IN_PR… Fri Nov 04 2022 16:23:51…
+	authmynextamplified762a1213    AWS::CloudFormation::Stack     CREATE_COMPLETE                Fri Nov 04 2022 16:21:09…
+	apimynextamplified             AWS::CloudFormation::Stack     CREATE_COMPLETE                Fri Nov 04 2022 16:23:49…
+Deployed api mynextamplified [ ======================================== ] 6/6
+	GraphQLAPI                     AWS::AppSync::GraphQLApi       CREATE_COMPLETE                Fri Nov 04 2022 16:21:17…
+	GraphQLAPINONEDS95A13CF0       AWS::AppSync::DataSource       CREATE_COMPLETE                Fri Nov 04 2022 16:21:30…
+	GraphQLAPITransformerSchema3C… AWS::AppSync::GraphQLSchema    CREATE_COMPLETE                Fri Nov 04 2022 16:22:22…
+	GraphQLAPIDefaultApiKey215A6D… AWS::AppSync::ApiKey           CREATE_COMPLETE                Fri Nov 04 2022 16:21:21…
+	Post                           AWS::CloudFormation::Stack     CREATE_COMPLETE                Fri Nov 04 2022 16:23:26…
+	CustomResourcesjson            AWS::CloudFormation::Stack     CREATE_COMPLETE                Fri Nov 04 2022 16:23:39…
+Deployed auth mynextamplified762a1213 [ ======================================== ] 10/10
+	UserPool                       AWS::Cognito::UserPool         CREATE_COMPLETE                Fri Nov 04 2022 16:19:22…
+	UserPoolClient                 AWS::Cognito::UserPoolClient   CREATE_COMPLETE                Fri Nov 04 2022 16:19:26…
+	UserPoolClientWeb              AWS::Cognito::UserPoolClient   CREATE_COMPLETE                Fri Nov 04 2022 16:19:26…
+	UserPoolClientRole             AWS::IAM::Role                 CREATE_COMPLETE                Fri Nov 04 2022 16:19:50…
+	UserPoolClientLambda           AWS::Lambda::Function          CREATE_COMPLETE                Fri Nov 04 2022 16:20:00…
+	UserPoolClientLambdaPolicy     AWS::IAM::Policy               CREATE_COMPLETE                Fri Nov 04 2022 16:20:26…
+	UserPoolClientLogPolicy        AWS::IAM::Policy               CREATE_COMPLETE                Fri Nov 04 2022 16:20:49…
+	UserPoolClientInputs           Custom::LambdaCallout          CREATE_COMPLETE                Fri Nov 04 2022 16:20:55…
+	IdentityPool                   AWS::Cognito::IdentityPool     CREATE_COMPLETE                Fri Nov 04 2022 16:20:59…
+	IdentityPoolRoleMap            AWS::Cognito::IdentityPoolRol… CREATE_COMPLETE                Fri Nov 04 2022 16:21:04…
 
 ✔ Generated GraphQL operations successfully and saved at src/graphql
-✔ All resources are updated in the cloud
+✔ Code generated successfully and saved in file src/API.ts
+
+
+GraphQL endpoint: https://ycqs66woj5gvdjmy4gvg2beetq.appsync-api.eu-west-1.amazonaws.com/graphql
+GraphQL API KEY: da2-jbx6fberizgttcm3dg7673oh4y
+
+GraphQL transformer version: 2
+
+Browserslist: caniuse-lite is outdated. Please run:
+  npx browserslist@latest --update-db
+  Why you should do it regularly: https://github.com/browserslist/browserslist#browsers-data-updating
 ```
 
 これで API がライブになり、操作を開始できます。

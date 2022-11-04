@@ -1,12 +1,12 @@
 {
   "api": {
-    "nextamplified": {
+    "mynextamplified": {
       "service": "AppSync",
       "providerPlugin": "awscloudformation",
       "dependsOn": [
         {
           "category": "auth",
-          "resourceName": "nextamplifiedd58fd113",
+          "resourceName": "mynextamplified762a1213",
           "attributes": [
             "UserPoolId"
           ]
@@ -24,7 +24,7 @@
             {
               "authenticationType": "AMAZON_COGNITO_USER_POOLS",
               "userPoolConfig": {
-                "userPoolId": "authnextamplifiedd58fd113"
+                "userPoolId": "authmynextamplified762a1213"
               }
             }
           ]
@@ -33,7 +33,7 @@
     }
   },
   "auth": {
-    "nextamplifiedd58fd113": {
+    "mynextamplified762a1213": {
       "service": "Cognito",
       "providerPlugin": "awscloudformation",
       "dependsOn": [],
